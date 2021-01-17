@@ -1,0 +1,24 @@
+sudo: required
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t ardayavas/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true ardayavas/react-test npm test
+
+after_success:
+  - docker build -t ardayavas/multi-client ./client
+  - docker build -t ardayavas/multi-nginx ./nginx
+  - docker build -t ardayavas/multi-server ./server
+  - docker build -t ardayavas/multi-worker ./worker
+  # Log in to the docker CLI
+  #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  #- docker push ardayavas/multi-client
+  #- docker push ardayavas/multi-nginx
+  #- docker push ardayavas/multi-server
+  #- docker push ardayavas/multi-worker
